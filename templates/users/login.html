@@ -1,0 +1,21 @@
+{% extends 'layouts/auth_base.html' %}
+{% block content %}
+    <form method="POST" action="{% url 'login_users' %}" class="row g-3 login-page">
+        {% csrf_token %}
+        <h2>Авторизация</h2>
+        <div class="col-12">
+            <label for="username" class="visually-hidden">Имя пользователя</label>
+            <input name="username" type="text" class="form-control"  id="username" placeholder="Имя пользователя">
+        </div>
+        <div class="col-12">
+            <label for="inputPassword2" class="visually-hidden">Пароль</label>
+            <input name="password" type="password" class="form-control" id="inputPassword2" placeholder="Пароль">
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary mb-1 d-block" style="width: 100%">Войти</button>
+        </div>
+        <div class="col-12">
+            <a href="/users/register/" type="submit" class="btn d-block" style="width: 100%">Регистрация</a>
+        </div>
+    </form>
+{% endblock %}
