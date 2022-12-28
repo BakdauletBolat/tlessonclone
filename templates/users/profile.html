@@ -10,7 +10,7 @@
                         <div class="ms-4 mt-5 d-flex flex-column" style="width: 150px;">
                             <img src="
 
-                                    {% if request.user.photo %}{{ request.user.photo.url }}{% else %}https://t3.ftcdn.net/jpg/04/62/93/66/360_F_462936689_BpEEcxfgMuYPfTaIAOC1tCDurmsno7Sp.jpg{% endif %}"
+                                    {% if user.photo %}{{ user.photo.url }}{% else %}https://t3.ftcdn.net/jpg/04/62/93/66/360_F_462936689_BpEEcxfgMuYPfTaIAOC1tCDurmsno7Sp.jpg{% endif %}"
                                  alt="Generic placeholder image" class="img-fluid img-thumbnail mt-3 mb-2"
                                  style="width: 150px; z-index: 1; object-fit: cover; height: 120px">
 
@@ -23,24 +23,25 @@
 
                         </div>
                         <div class="ms-3" style="margin-top: 130px;">
-                            <h5>{{ request.user.first_name }} {{ request.user.last_name }}</h5>
-                            <p>@{{ request.user.username }}</p>
+                            <h5>{{ user.first_name }} {{ user.last_name }}</h5>
+                            <h5>{{ user.email }}</h5>
+                            <p>@{{ user.username }}</p>
                         </div>
                     </div>
                     <div class="p-4 text-black" style="background-color: #f8f9fa;">
                         <div class="d-flex justify-content-end text-center py-1">
                             <div>
                                 <p class="mb-1 h5">253</p>
-                                <p class="small text-muted mb-0">Photos</p>
+                                <p class="small text-muted mb-0">Твиты</p>
                             </div>
                             <div class="px-3">
-                                <p class="mb-1 h5">1026</p>
-                                <p class="small text-muted mb-0">Followers</p>
+                                <p class="mb-1 h5">{{ user.subscribers.all|length }}</p>
+                                <p class="small text-muted mb-0">Подписчики</p>
                             </div>
-                            <div>
-                                <p class="mb-1 h5">478</p>
-                                <p class="small text-muted mb-0">Following</p>
-                            </div>
+                            <a class="block" href="{% url 'subscriptions' user.id %}">
+                                <p class="mb-1 h5">{{ user.subscriptions.all|length }}</p>
+                                <p class="small text-muted mb-0">Подписки</p>
+                            </a>
                         </div>
                     </div>
                     <div class="card-body p-4 text-black">

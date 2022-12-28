@@ -1,11 +1,37 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from users.models import User
+from users.models import User, UserRequest
 
 
 def profile_view(request):
-    return render(request, 'users/profile.html')
+    user = request.user
+    context = {
+        'user': user
+    }
+    return render(request, 'users/profile.html', context)
+
+
+def request_user_view(request, to_user_id):
+    to_user = User.objects.get(id=to_user_id)
+    user = request.user
+    user.subscriptions.add(to_user.id)
+    r = UserRequest.objects.create(
+        to_user=to_user,
+        from_user=user
+    )
+
+    print(r)
+
+    return redirect(reverse('subscriptions', args=[user.id]))
+
+
+def detail_user_view(request, username):
+    user = User.objects.get(username=username)
+    context = {
+        'user': user
+    }
+    return render(request, 'users/profile.html', context)
 
 
 def upload_photo_view(request):
@@ -64,3 +90,25 @@ def register_user_view(request):
 def logout_view(request):
     logout(request)
     return redirect('/')
+
+
+def users_view(request):
+    users = User.objects.all().order_by('-id')
+
+    context = {
+        'users': users
+    }
+
+    return render(request, 'users/users.html', context)
+
+
+def subscriptions_view(request, user_id):
+    user = User.objects.get(id=user_id)
+    subscriptions = user.subscriptions.all()
+
+    context = {
+        'user': user,
+        'users': subscriptions
+    }
+
+    return render(request, 'users/users.html', context)
