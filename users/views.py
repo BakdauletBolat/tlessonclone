@@ -1,3 +1,4 @@
+from django.db.models import Case, When, Value, Q
 from django.shortcuts import render, redirect, reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -21,9 +22,22 @@ def request_user_view(request, to_user_id):
         from_user=user
     )
 
-    print(r)
-
     return redirect(reverse('subscriptions', args=[user.id]))
+
+
+def accept_user_view(request, request_user_id, statusAccept):
+    user_request = UserRequest.objects.get(id=request_user_id)
+    user_request.is_confirmed = True
+    user_request.is_accept = statusAccept
+
+    if statusAccept:
+        to_user = user_request.to_user
+        to_user.subscriptions.add(user_request.from_user.id)
+        to_user.save()
+
+    user_request.save()
+
+    return redirect(reverse('subscriptions', args=[request.user.id]))
 
 
 def detail_user_view(request, username):
@@ -93,7 +107,13 @@ def logout_view(request):
 
 
 def users_view(request):
-    users = User.objects.all().order_by('-id')
+    users = User.objects.all().order_by('-id').annotate(
+        text=Case(
+            When(Q(subscribers__in=[request.user.id], subscriptions__in=[request.user.id]), then=Value('Вы друзья')),
+            When(subscribers__in=[request.user.id], then=Value('Вы уже отправили запрос')),
+            default=Value('Добавить в друзья'),
+        )
+    )
 
     context = {
         'users': users
@@ -104,7 +124,13 @@ def users_view(request):
 
 def subscriptions_view(request, user_id):
     user = User.objects.get(id=user_id)
-    subscriptions = user.subscriptions.all()
+    subscriptions = user.subscriptions.all().annotate(
+        text=Case(
+            When(Q(subscribers__in=[request.user.id], subscriptions__in=[request.user.id]), then=Value('Вы друзья')),
+            When(subscribers__in=[request.user.id], then=Value('Вы уже отправили запрос')),
+            default=Value('Добавить в друзья'),
+        )
+    )
 
     context = {
         'user': user,

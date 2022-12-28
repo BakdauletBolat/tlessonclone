@@ -1,5 +1,4 @@
 {% extends 'layouts/base.html' %}
-{% load check_request %}
 {% block content %}
 
 <div class="container">
@@ -20,7 +19,7 @@
 
                         </div>
                         <div class="col-md-3 col-sm-3">
-                            <a href="{% url 'request_user' user.id %}" class="btn btn-primary pull-right">{{ request.user|check:user }}</a>
+                            <a href="{% url 'request_user' user.id %}" class="btn btn-primary pull-right">{{ user.text }}</a>
                         </div>
                     </div>
                 </div>
